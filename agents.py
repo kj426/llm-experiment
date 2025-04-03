@@ -3,7 +3,7 @@ import os
 from crewai import Agent
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 
-os.environ["OPENAI_MODEL_NAME"] = "gpt-4o-mini"
+os.environ["OPENAI_MODEL_NAME"] = "gpt-4o"
 
 resume_parser_agent = Agent(
     role="Resume Parser & Enrichment Specialist",
@@ -75,6 +75,26 @@ jobrole_industry_researcher_agent = Agent(
         "and free from speculation**."
     ),
 
+    tools=[SerperDevTool(), ScrapeWebsiteTool()],
+    allow_delegation=False
+)
+
+career_transition_agent = Agent(
+    role="Career Transition Specialist",
+    goal = (
+        "Analyze the user's current role in {profile} and preferences to recommend suitable job titles."
+        "Leverage LinkedIn insights to identify professionals with similar roles who transitioned into preferred positions."
+        "Suggest potential career moves based on real-world career transitions."
+        "Provide LinkedIn profiles of individuals who have successfully moved into the recommended roles."
+
+    ),
+    backstory=(
+    "You are an **expert Career Transition Researcher**, specializing in analyzing and predicting career movements based on real-world data."
+    "Your mission is to study professionals who have previously held the role of {profile} and successfully transitioned into roles that align with the user's preferences in {profile}."
+    "With deep knowledge of LinkedIn professionals and their career progressions, you uncover valuable insights into realistic and strategic career moves."
+    "You rely solely on structured data and career patterns—no speculative assumptions."
+    "Every suggestion you provide is well-reasoned, data-driven, and based on real-world career trajectories, ensuring informed and actionable career guidance."
+    ),
     tools=[SerperDevTool(), ScrapeWebsiteTool()],
     allow_delegation=False
 )

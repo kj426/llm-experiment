@@ -1,7 +1,10 @@
 
 from crewai import Task
-from agents import resume_parser_agent, query_classifier_agent, jobrole_industry_researcher_agent, work_culture_researcher_agent
-from models import ResumeData, RoleRecommendations, WorkCultureRecommendations
+from agents import (resume_parser_agent, query_classifier_agent,
+                    jobrole_industry_researcher_agent, work_culture_researcher_agent,
+                    career_transition_agent)
+from models import (ResumeData, RoleRecommendations,
+                    WorkCultureRecommendations, CareerTransitionRecommendations)
 
 
 resume_extraction = Task(
@@ -11,10 +14,11 @@ description=(
         "Projects, and relevant metadata such as industry classification and job seniority levels.\n"
         "Enhance the structured resume profile by:\n"
         "1️⃣ **Verifying accuracy** of extracted details.\n"
-        "2️⃣ **Adding missing details** if contextually inferable (without assumptions).\n"
+        "2️⃣ **Adding missing details** if contextually inferrable (without assumptions) and well reasoned.\n"
         "3️⃣ **Categorizing** extracted skills and experience into appropriate industries.\n"
         "4️⃣ **Incorporating additional insights**, such as employer ratings, career trajectory, and industry trends.\n"
         "5️⃣ **Ensuring consistency and readability** for downstream applications.\n"
+        "5️6 **Ensure the inferred details are well reasoned"
     ),
     expected_output=(
         "A fully structured and enriched resume profile in the prescribed output format, ready for further analysis.\n"
@@ -22,6 +26,7 @@ description=(
         "Be **validated and free of errors**.\n"
         "Include additional insights**, such as employer reputation, industry , manager vs individual contributor etc.\n"
         "Maintain proper categorization** of roles, skills, and industries.\n"
+        "Provide well reasoned justification wherever requested explicitly for the inferences"
     ),
     output_pydantic=ResumeData,
     agent=resume_parser_agent
@@ -77,6 +82,22 @@ work_culture_research_task = Task(
     ),
     output_pydantic=WorkCultureRecommendations,
     agent=work_culture_researcher_agent
+)
+
+career_transition_research_task = Task(
+    description=(
+        "Analyse the user's ** {query} ** for reason for career change and career preferences set in {profile}"
+        "Use knowledge of working professionals from linkedin who have transitioned from user's current role in {profile} matching the {query} and preferences"
+        "Ensure the recommendations are well reasoned"
+    ),
+    expected_output=(
+        "A structured response with: "
+        "** Recommended Role** where people from user's current role in {profile} moved to matching the preferences in {profile}"
+        "** List of LInkedin profiles** matching this transition from user's current role"
+        "** Well-reasoned justification** for each recommendation"
+    ),
+    output_pydantic=CareerTransitionRecommendations,
+    agent=career_transition_agent
 )
 
 
